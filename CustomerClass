@@ -1,0 +1,42 @@
+
+
+public class Customer
+{
+    private String partyName;
+    private int partySize;
+    private String movieName;
+    private boolean child;
+
+    public Customer(String partyName, int partySize, String movieName, boolean child)
+    {
+        this.partyName = partyName;
+        this.partySize = partySize;
+        this.movieName = movieName;
+        this.child = child;
+    }
+
+    public String getPartyName()
+    {
+        return partyName;
+    }
+    
+    public int getPartySize()
+    {
+        return partySize;
+    }
+    
+    public String getMovieName()
+    {
+        return movieName;
+    }
+    
+    public boolean getChild()
+    {
+        return child;
+    }
+    
+     public String toString() //String just displays party name
+     {
+        return partyName;
+     }
+}
