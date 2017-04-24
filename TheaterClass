@@ -1,0 +1,120 @@
+
+public class Theater
+{
+    ListArrayBased<Customer> aList = new ListArrayBasedPlus<Customer>();
+    String movie; // movie name
+    int rows;
+    int cols;
+    int totalSeats;
+    int emptySeats;
+    double price; // no used currently price is kept in driver
+    int sold; //to entrys to theater = tickets sold
+    
+    public Theater(String name, int rows, int cols)
+    {
+        this.movie = name;
+        this.rows = rows;
+        this.cols = cols;
+        this.totalSeats = rows * cols;
+        sold = 0; //tickets sold
+        emptySeats = totalSeats; // initial empty seats in theater
+        for(int i = 0; i < totalSeats; i++ )
+        {
+            aList.add(i, null);
+        }
+       }
+        
+    public int getSold() //tickets sold based on number of entrys into theater
+    {
+        return sold;
+    }
+    
+
+    public boolean isTheaterFull() //No seats left
+    {
+        return emptySeats == 0;
+    }
+    
+    public boolean areSeatsAval()//Seats are there to be used
+    {
+        return emptySeats != 0;
+    }
+    
+    public int numOfSeatsAval()//number of seats left
+    {
+        return emptySeats;
+    }
+    
+    public boolean findparty(String findName) //Search if Customer/partyis in the theater for menu option 1
+    {
+        for(int i = 0; i < totalSeats; i++) 
+        {
+            if(aList.get(i) != null)
+            {
+                if(aList.get(i).equals(findName))
+                {
+                    return true; //party exists in the theater
+                }
+            }
+        }
+        
+        return false; //party not found
+    }
+    
+    public void seatParty(Customer cust) //check for how how many to add/partySize versus steats left
+    {
+        //NEED TO MAKE SURE THERE ARE ENOUGH SEATS or not all of party will be seated
+        int toSeat = cust.getPartySize();
+        int seated = 0; //used as a flag to stop puting members of party in the theater
+        sold += toSeat; //total of tickets for this movie increased by party size
+        
+        for(int i = 0; i < totalSeats & seated < toSeat; i++) //loop to every seat, terminates when last seat is checked or party is seated
+        {
+            if(aList.get(i) == null) //seat customer/party if seat is empty
+            {
+                aList.add(i, cust);
+                seated++;//flag that stops loop when all party members are seated
+                emptySeats--; //less seats in theater
+            }
+        }
+       
+    }
+    
+    public void partyLeaves(String custName) //replaces any instance of named customer with null(emtpy seat)
+    {
+        
+        for(int i = 0; i < totalSeats; i++ )
+        {
+            if(aList.get(i).getPartyName() == custName)
+            {
+                aList.add(i, null);
+                emptySeats++; //More seats freed up
+            }
+        }
+        
+    }
+    
+    public String getSeatingChart() //Seating chart
+    {
+        StringBuilder sb = new StringBuilder();
+        int ndx = 0;
+        sb.append("Here's the seating chart for the " +  movie + " Movie Theater:").append('\n');
+            for(int i = 1; i <= rows; i++ )
+            {
+                for(int j = 1; j <= cols; j++ )
+                {
+                    if(aList.get(ndx) == null)
+                    {
+                        sb.append("Row " + i + " seat " + j + " is free.").append('\n');
+                        ndx++;
+                    }
+                    else
+                    {
+                        sb.append("Row " + i + " seat " + j + " is used by " +  aList.get(ndx).getPartyName() + "'s party.").append('\n');
+                        ndx++;
+                    }
+                }
+            }
+        return sb.toString();
+    }
+}
