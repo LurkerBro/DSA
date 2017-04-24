@@ -1,0 +1,145 @@
+//Here are my ADTs incase of some conflict
+
+
+
+public class ListArrayBasedPlus<T> extends ListArrayBased<T>
+{
+    public void add(int index, T item)
+    {
+        if(super.numItems == super.items.length)
+        {
+            resize();
+        }
+        super.add(index, item);
+    }
+    
+    public T get(int index)
+    {
+        return super.get(index);
+    }
+    
+    
+    private void resize()//private helper method
+    {
+        T []newItems = (T[])new Object[2*super.items.length];
+        for(int i = 0; i < super.items.length; i++)
+        {
+            newItems[i] = super.items[i];
+        }
+        
+        super.items = newItems;
+        
+    }
+    
+    public void reverse()
+    {
+        for(int i = 0; i < super.numItems/2; i++)
+        {
+            T temp = super.items[i];
+            super.items[i] = super.items[super.numItems - 1 - i];
+            super.items[super.numItems - 1 - i] = temp;
+        }
+    }
+    
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("        List of size " + super.numItems +" has the following items: ");
+        for(int i = 0; i < super.numItems; i++)
+        {
+            sb.append(super.items[i]).append(" ");
+        }
+        sb.append('\n');
+        return sb.toString();
+    }
+}
+
+
+///////////////////////////////////////////Queue
+public class QueueADT<T> implements QueueInterface<T>
+{
+    protected T []items;
+    protected int numItems;
+    protected int front;
+    protected int back;
+
+    public QueueADT()
+    {
+        items = (T[])new Object[3];
+        numItems = 0;
+        front = 0;
+        back = 0;
+    }
+
+    public boolean isEmpty()
+    {
+        return numItems == 0;
+    }
+    
+    public void enqueue(T newItem)
+    {
+        if( numItems == items.length)
+        {
+            resize();
+        }            
+        items[back] = newItem;
+        back = (back +1) % items.length;
+        numItems++;
+    }
+    
+    public T dequeue()
+    {
+        if (isEmpty())
+        {
+            throw new QueueException("Error in dequeue");
+        }
+        T temp = items[front];
+        items[front] = null;
+        numItems--;
+        front = (front +1) % items.length;
+        return temp;
+    }
+    
+    public void dequeueAll()
+    {
+        items = (T[])new Object[3];
+        numItems = 0;
+        front = 0;
+        back = 0;
+    }
+    
+    public T peek()
+    {
+        if (isEmpty())
+        {
+            throw new QueueException("Error in peek");
+        }
+        return items[front];
+    }
+    
+    
+    protected void resize()
+    {
+        T[] temp = (T[])new Object[2*items.length];
+        for(int i = 0; i < numItems; i++)
+        {
+            temp[i] = items[(front + i) % items.length];
+        }
+        items = temp;
+        front = 0;
+        back = numItems;
+    }
+    
+     public String toString() // front to back
+     {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < numItems; i++)
+        {
+            sb.append(items[(front + i) % items.length]).append(" ");
+            sb.append('\n');
+        }
+        sb.append('\n');
+        return sb.toString();
+        }
+}
+
