@@ -1,0 +1,222 @@
+//This is the driver I put together. I used the Array List and QueueADT we developed in class. It is VERY rough still needs to be formatted and fix text
+//Made Progress on Menu options 1, 3, 5, 6, 7, 8. Not sure how to approach the "round robin" handling of 2, and 4 is very basic
+//Did some minor testing with manual input, so besides formatting issues 1, 3, 5, 6, 7, 8 seem to work
+//I also compliled this is BlueJ, so I'm not sure if you will wrong into any issues yourself
+
+
+
+import java.util.*;
+import java.io.*;
+
+public class TheaterProject
+{
+
+    static BufferedReader stdin = new BufferedReader (new InputStreamReader(System.in));
+
+    public static void main(String args[]) throws IOException
+    {
+        int choice = 0; //Used for drive menu options and integer input
+        int rows;
+        int cols;
+        double ticketPrice = 0;
+        
+        String entry1; //String for input used in option 1 and 3 for Party Name of Customer
+        String entry2; //String also used for option 1 in put, holds name of movie given.
+        
+        Theater life;
+        Theater logan;
+        
+        //The three lines as queues
+        QueueADT<Customer> express = new QueueADT();
+        QueueADT<Customer> reg1 = new QueueADT();
+        QueueADT<Customer> reg2 = new QueueADT();
+        
+        
+        System.out.println("Welcome to the Wonderful Movie Theater program!");
+        System.out.println("Tonight's features are: Life and Logan"); //
+        
+        
+        System.out.println("Enter information about the Logan Movie Theater: ");
+        
+        System.out.println("Please specify the size of the Movie Theaters ");
+            //Creation of logan theater
+            System.out.println("Enter information about the Logan Movie Theater: ");
+            System.out.print("Enter number of rows: ");
+            rows = Integer.parseInt(stdin.readLine());
+            System.out.print("Enter number of seats in a row: ");
+            cols = Integer.parseInt(stdin.readLine());
+            logan = new Theater("Logan", rows, cols);
+            //Creation of life theater
+            System.out.println("Enter information about the Life Movie Theater: ");
+            System.out.print("Enter number of rows: ");
+            rows = Integer.parseInt(stdin.readLine());
+            System.out.print("Enter number of seats in a row: ");
+            cols = Integer.parseInt(stdin.readLine());
+            life = new Theater("Life", rows, cols);
+            
+            System.out.println("Enter the price of a ticket: ");
+            ticketPrice = Double.parseDouble(stdin.readLine());
+            System.out.println("");
+        
+        do {
+            //Execute menu every loop
+            System.out.print(displayMenu());
+            choice = Integer.parseInt(stdin.readLine());
+            switch(choice) {
+            case 1: //New Customer to be put in line
+                System.out.println(choice);
+                System.out.print("Enter customer name: ");
+                entry1 = stdin.readLine();
+                while(logan.findparty(entry1) == true || life.findparty(entry1) == true) //check if name is in other theaters
+                {
+                    System.out.println("Customer " +  entry1 + " is already in the theater!");
+                    System.out.println("Please specify a different name. ");
+                    System.out.print("Enter customer name: ");
+                    entry1 = stdin.readLine();
+                }
+                System.out.print("Enter party size: ");
+                choice = Integer.parseInt(stdin.readLine());
+                System.out.print("Enter movie name: ");
+                entry2 = stdin.readLine();
+                System.out.print("Is a child 11 or younger in this party(Y/N)? ");
+                String age = stdin.readLine(); // Y or N
+                boolean ageCheck = false;
+                if(age.equals("Y"))
+                {
+                    ageCheck = true; //Yes 11 year old or younger child is in the party
+                }
+                else
+                {
+                    ageCheck = false;
+                }
+                
+                Customer cust = new Customer(entry1, choice, entry2, ageCheck); //Customer created and ready to be added to a line
+                
+                if(cust.getChild() == false) //No child in party, put customer in shortest line
+                {
+                    if(reg1.numItems > reg2.numItems)
+                    {
+                        reg2.enqueue(cust);
+                        System.out.println("Customer " + entry1 + " is in second ticket line.");
+                    }
+                    else
+                    {
+                        reg1.enqueue(cust);
+                        System.out.println("Customer " + entry1 + " is in first ticket line.");
+                    }
+                }
+                else //Child 11 and under in party, try to put in lines two times smaller than express if possible
+                {
+                    if(reg1.numItems < (double)express.numItems/2) 
+                    {
+                        reg1.enqueue(cust);
+                        System.out.println("Customer " + entry1 + " is in first ticket line.");
+                    }
+                    else if(reg2.numItems < (double)express.numItems/2)
+                    {
+                        reg2.enqueue(cust);
+                        System.out.println("Customer " + entry1 + " is in second ticket line.");
+                    }
+                    else
+                    {
+                        express.enqueue(cust);
+                        System.out.println("Customer " + entry1 + " is in express ticket line.");
+                    }
+                }
+                
+                break;
+                
+            case 2: // Customer buys ticket
+                System.out.println(choice);
+                //Just for testing 
+                //Customer alex = new Customer("Alex", 2, "Logan", false);
+                //logan.seatParty(alex);
+                //Example if getting a customer from a line and adding it to a theater
+                //Customer buyer = reg1.dequeue();
+                //logan.seatParty(buyer);
+                System.out.println("");
+                break;
+            case 3: // search customer by name to leave theater
+                System.out.println(choice);
+                System.out.println("Enter customer name to leave Movie Theater: ");
+                entry1 = stdin.readLine();
+                if(logan.findparty(entry1) == false && life.findparty(entry1) == false) //Customer not in either theater
+                {
+                    System.out.println("This customer is not in Movie Theater!");
+                }
+                else
+                {
+                    if(logan.findparty(entry1) == true)//Customer is in theather, check if they are in Logan
+                    {
+                        logan.partyLeaves(entry1);
+                    }
+                    else //if not in Logan them must be in life
+                    {
+                        life.partyLeaves(entry1);
+                    }
+                    System.out.println("Customer " + entry1 + " has left the Movie Theater.");
+                }
+                //Example logan.partyLeaves("Alex" or string input);
+                System.out.println("");
+                break;
+            case 4: //display waiting customers in their lines
+                System.out.println(choice);
+                System.out.println("First line: ");
+                System.out.println(reg1);
+                
+                System.out.println("Second line: ");
+                System.out.println(reg2);
+                
+                System.out.println("Express line: ");
+                System.out.println(express);
+                System.out.println("");
+                break;
+            case 5: //Display seating chart for Life
+                System.out.println(choice);
+                
+                System.out.println(life.getSeatingChart());
+                System.out.println("");
+                break;
+            case 6: // Display seating chart for Logan
+                System.out.println(choice);
+                
+                System.out.println(logan.getSeatingChart());
+                System.out.println("");
+                break;
+            case 7: //Tickets sold and earnings
+                System.out.println(choice);
+                System.out.println(life.getSold()+ "tickets have been sold for the Life Movie.");
+                System.out.println(logan.getSold() + "tickets have been sold for the Logan Movie.");
+                System.out.println("Total earnings: " + ticketEarnings(ticketPrice, logan, life));
+                
+                System.out.println("");
+                break;
+            default:
+                break;
+            }
+        } while(choice != 8); //Upon menu choice 8 Display final earnings
+        System.out.println("The Wonderful Movie Theater who earned $" + ticketEarnings(ticketPrice, logan, life) + " kicks out remaining customers and closes...");
+        System.out.println("Good Bye!");
+    }
+
+    private static String displayMenu()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Select an operation from the following menu: ").append('\n');
+        sb.append('\t').append("1. Customer(s) enter(s) Movie Theater.").append('\n');
+        sb.append('\t').append("2. Customer buys ticket(s).").append('\n');
+        sb.append('\t').append("3. Customer(s) leave(s) the theater.").append('\n');
+        sb.append('\t').append("4. Display info about customers waiting for tickets.").append('\n');
+        sb.append('\t').append("5. Display seating chart for Life Movie Theater.").append('\n');
+        sb.append('\t').append("6. Display seating chart for Logan Movie Theater.").append('\n');
+        sb.append('\t').append("7. Display number of tickets sold and total earnings.").append('\n');
+        sb.append('\t').append("8. End the program.").append('\n');
+        return sb.toString();
+    }
+    
+    private static double ticketEarnings(double ticketPrice, Theater movie1, Theater movie2)
+    {
+        
+        return ticketPrice *(movie1.getSold() + movie2.getSold());
+    }
+}
